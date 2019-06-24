@@ -36,13 +36,13 @@ router.post('/signup', (req, res) => {
                         var emailVerifyToken = crypto.createHash('sha1').update(randomToken + user.email).digest('hex');
                         User.findOneAndUpdate({ email: user.email }, { emailVerificationToken: emailVerifyToken }, { new: true }).exec((err, details) => {
                             if (err || !details) {
-                                let httpStatus = error ? 500 : 400;
+                                let httpStatus = err ? 500 : 400;
                                 return res.status(httpStatus).json({
                                     status: 'failed',
-                                    message: error || responseCodes["no-user-found"]
+                                    message: err || responseCodes["no-user-found"]
                                 })
                             } else {
-                                let uri = `${req.protocol}` + '://' + `${req.hostname}:${process.env.PORT}` + '/api/verify-email/' + `${emailVerifyToken}`;
+                                let uri = `${req.protocol}` + '://' + `${req.hostname}` + '/api/email-verification/' + `${emailVerifyToken}`;
                                 utils.sendMail(user.email, 'Brand Verification', `<a href ="${uri}" target="_blank">Verify Account</a>`)
                                     .then(data => {
                                         return res.status(200).json({
@@ -86,13 +86,13 @@ router.post('/signup', (req, res) => {
 
 // Email Verification!
 
-router.get('/verify-email/:token', (req, res) => {
+router.get('/email-verification/:token', (req, res) => {
     User.findOne({ emailVerificationToken: req.params.token }).exec((err, verified) => {
         if (err || !verified) {
-            let httpStatus = error ? 500 : 400;
+            let httpStatus = err ? 500 : 400;
             return res.status(httpStatus).json({
                 status: 'failed',
-                message: error || responseCodes["resend-email"]
+                message: err || responseCodes["resend-email"]
             })
         } else {
             User.findOneAndUpdate({ emailVerificationToken: req.params.token }, { isEmailVerified: true }, { new: true }).exec((error, state) => {
@@ -124,7 +124,7 @@ router.post('/resend-email', (req, res) => {
             } else {
                 let userEmailToken = user.emailVerificationToken;
                 if (userEmailToken) {
-                    let uri = `${req.protocol}` + '://' + `${req.hostname}:${process.env.PORT}` + '/api/verify-email/' + `${userEmailToken}`;
+                    let uri = `${req.protocol}` + '://' + `${req.hostname}` + '/api/email-verification/' + `${userEmailToken}`;
                     utils.sendMail(user.email, 'Brand Verification - Resent', `<a href ="${uri}" target="_blank">Verify Account</a>`)
                         .then(data => {
                             return res.status(200).json({
@@ -144,7 +144,7 @@ router.post('/resend-email', (req, res) => {
                                 message: error || responseCodes["no-user-found"]
                             })
                         } else {
-                            let uri = `${req.protocol}` + '://' + `${req.hostname}:${process.env.PORT}` + '/api/verify-email/' + `${emailVerifyToken}`;
+                            let uri = `${req.protocol}` + '://' + `${req.hostname}` + '/api/verify-email/' + `${emailVerifyToken}`;
                             utils.sendMail(user.email, 'Brand Verification - Resent', `<a href ="${uri}" target="_blank">Verify Account</a>`)
                                 .then(data => {
                                     return res.status(200).json({
@@ -199,8 +199,8 @@ router.post('/reactivate-account/:token', (req, res) => {
 router.post('/signin', (req, res) => {
     let { email, password } = req.body;
     if (email && password) {
-        User.findOne({ email: email }).exec((err, data) => {
-            if (err || !data) {
+        User.findOne({ email: email }).exec((error, data) => {
+            if (error || !data) {
                 let httpStatus = error ? 500 : 400;
                 return res.status(httpStatus).json({
                     status: 'failed',
@@ -209,7 +209,7 @@ router.post('/signin', (req, res) => {
             } else {
                 if (data.isActive === false) {
                     var randomToken = crypto.randomBytes(20);
-                    var reactivateAccountToken = crypto.createHash('sha1').update(randomToken + user.email).digest('hex');
+                    var reactivateAccountToken = crypto.createHash('sha1').update(randomToken + data.email).digest('hex');
                     User.findOneAndUpdate({ email: user.email }, { emailVerificationToken: reactivateAccountToken }, { new: true }).exec((err, details) => {
                         if (err || !details) {
                             let httpStatus = error ? 500 : 400;
