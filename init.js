@@ -1,3 +1,7 @@
+// DOTENV CONFIG
+require('dotenv').config();
+
+
 /**
  * Module dependencies.
  */
@@ -18,19 +22,14 @@ const expressStatusMonitor = require('express-status-monitor');
 const responseTime = require('response-time');
 
 /**
- * Server Configs
- */
-
-const serverConfig = require('./config/server.config');
-
-/**
  * DB Config and Connection
  */
 
-const dbConnect = require('./config/db.connection')['development'];
+let mongoConnectionString = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`;
+
 mongoose.Promise = global.Promise;
 mongoose.connect(
-    dbConnect.connectionString, {
+    mongoConnectionString, {
         useNewUrlParser: true,
         useCreateIndex: true,
         useFindAndModify: false,
@@ -42,7 +41,7 @@ mongoose.connect(
         if (err) {
             console.log(err);
         } else {
-            console.log(`Connection to ${dbConnect.db} Successfull`);
+            console.log(`Connection to Database: ${process.env.MONGO_DB} Successfull`);
         }
     }
 );
@@ -52,6 +51,7 @@ mongoose.connect(
  */
 
 const auth = require('./controllers/api.auth');
+const checker = require('./controllers/api.checker');
 
 /**
  * Express configuration.
@@ -110,6 +110,7 @@ app.use((req, res, next) => {
  */
 
 app.use('/api', auth);
+app.use('/api', checker);
 
 app.options('*', (req, res) => {
     res.end();
@@ -148,19 +149,9 @@ app.use((req, res) => {
     });
 });
 
-
-
-serverConfig.url =
-  serverConfig.environment === "development" ? serverConfig.url : '0.0.0.0';
-
-  serverConfig.environment === "development" ? app.set('port', process.env.PORT || 8081) : app.set('port', process.env.PORT || 80)
-
-
-app.listen(app.get('port'), () => {
+app.listen(process.env.PORT, () => {
     console.log(
-        `app is running at ${serverConfig.url}`,
-        chalk.green('✓'),
-        app.get('port'),
-        app.get('env')
+        `app is running at port ${process.env.PORT}`,
+        chalk.green('✓')
     );
 });

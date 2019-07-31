@@ -1,12 +1,14 @@
 const nodemailer = require("nodemailer");
 let uuidAPIKey = require('uuid-apikey');
-let secretKeys = require('./config/secrets.config');
 
 
 let transporter = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
     port: 587,
-    auth: secretKeys.auth
+    auth: {
+        user: process.env.ETHEREAL_USER,
+        pass: process.env.ETHEREAL_PASS
+    }
 });
 
 
@@ -36,14 +38,14 @@ return new Promise((resolve, reject) => {
             port: account.smtp.port,
             secure: account.smtp.secure,
             auth: {
-                user: secretKeys.auth.user,
-                pass: secretKeys.auth.pass
+                user: process.env.ETHEREAL_USER,
+                pass: process.env.ETHEREAL_PASS
             }
         });
 
         // Message object
         let message = {
-            from: secretKeys.auth.user,
+            from: process.env.ETHEREAL_USER,
             to: to,
             subject: subject,
             // text: 'Hello to myself!',

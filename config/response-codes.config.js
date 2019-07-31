@@ -1,4 +1,6 @@
 module.exports = {
+    'something-went-wrong': 'something-went-wrong',
+    'successfull':'successfull',
     'password-mismatch': 'password and confirm password are not same.',
     'account-create-success': 'Account created successfully.',
     'account-exists': 'account already exists',

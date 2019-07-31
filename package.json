@@ -5,23 +5,28 @@
   "main": "init.js",
   "scripts": {
     "start": "node init",
+    "local": "node init",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Akhil Mukkamala",
   "license": "ISC",
   "dependencies": {
+    "ajv": "^6.10.2",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
     "chalk": "^2.4.2",
+    "cheerio": "^1.0.0-rc.3",
     "compression": "^1.7.4",
     "connect-mongo": "^2.0.3",
     "cookie-parser": "^1.4.4",
     "crypto": "^1.0.1",
+    "dotenv": "^8.0.0",
     "errorhandler": "^1.5.0",
     "express": "^4.16.4",
     "express-session": "^1.16.1",
     "express-status-monitor": "^1.2.5",
     "express-validator": "^5.3.1",
+    "fbgraph": "^1.4.4",
     "jsonwebtoken": "^8.5.1",
     "lusca": "^1.6.1",
     "mongoose": "^5.5.5",
@@ -29,6 +34,7 @@
     "nodemailer": "^6.1.1",
     "request-promise": "^4.2.4",
     "response-time": "^2.3.2",
-    "uuid-apikey": "^1.4.3"
+    "uuid-apikey": "^1.4.3",
+    "xml2js": "^0.4.19"
   }
 }
